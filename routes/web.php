@@ -83,4 +83,11 @@ Route::middleware(['auth','roleplay','isActiveUser'])->group(function () {
         ->where(['menu' => '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}']);
 
     });
+
+    Route::prefix('data')->group(function(){
+        Route::get('/kecamatan/datatable', [App\Http\Controllers\Data\KecamatanController::class, 'datatable']);
+        Route::resource('/kecamatan', App\Http\Controllers\Data\KecamatanController::class)->except(['create', 'edit']);
+
+    });
 });
+
