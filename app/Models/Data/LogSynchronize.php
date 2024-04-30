@@ -5,11 +5,11 @@ namespace App\Models\Data;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Kecamatan extends Model
+class LogSynchronize extends Model
 {
     use HasFactory;
     
-    protected $table = 'kecamatan';
+    protected $table = 'log_synchronize';
 
     protected $keyType = 'string';
 

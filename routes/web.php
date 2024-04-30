@@ -85,6 +85,7 @@ Route::middleware(['auth','roleplay','isActiveUser'])->group(function () {
     });
 
     Route::prefix('data')->group(function(){
+        Route::get('/kecamatan/synch', [App\Http\Controllers\Data\KecamatanController::class, 'synchronize']);
         Route::get('/kecamatan/datatable', [App\Http\Controllers\Data\KecamatanController::class, 'datatable']);
         Route::resource('/kecamatan', App\Http\Controllers\Data\KecamatanController::class)->except(['create', 'edit']);
 

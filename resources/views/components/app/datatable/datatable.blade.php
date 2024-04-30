@@ -118,10 +118,10 @@
                     <tbody>
                         {{ $tbody }}
                         <tr x-show="datatable.isEmpty() && !datatable.loading" class="border-b dark:border-gray-700">
-                            <td class="px-4 py-3 text-center" colspan="5">No matching records found.</td>
+                            <td class="px-4 py-3 text-center" colspan="100%">No matching records found.</td>
                         </tr>
                         <tr x-show="datatable.loading" class="border-b dark:border-gray-700">
-                            <td class="px-4 py-3 text-center" colspan="5">Loading....</td>
+                            <td class="px-4 py-3 text-center" colspan="100%">Loading....</td>
                         </tr>
                     </tbody>
                 </table>

@@ -26,6 +26,18 @@
                 </template>
                 <span x-text="loadingState ? `Loading...` : `Tambah Data`"></span>
             </button>
+            <button  @click="synchData"
+            class="relative bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mb-2 focus:outline-none focus:ring-4 focus:ring-aqua-400 disabled:cursor-wait disabled:bg-green-700"
+            :disabled="loadingState"
+            >
+                <template x-if="!loadingState">
+                    <i class="fa fa-cloud-download mr-1"></i>
+                </template>
+                <template x-if="loadingState">
+                    <i class="fa fa-spinner animate-spin"></i>    
+                </template>
+                <span x-text="loadingState ? `Synchronizing...` : `Synchronize`"></span>
+            </button>
         </x-slot>
         
         <!-- Title -->
@@ -36,26 +48,46 @@
         <form action="#" @submit.prevent="confirmSave">
             <div class="flex flex-wrap -mx-3 mb-6">
                 <div class="w-full px-3 my-3">
-                    <label class="block tracking-wide text-gray-700 text-sm font-bold mb-2" for="controller_name">
-                        Controller Name
+                    <label class="block tracking-wide text-gray-700 text-sm font-bold mb-2" for="kode_kabupaten">
+                        Kode Kabupaten
                     </label>
-                    <input name="controller_name" x-model="form.controller_name"
+                    <input name="kode_kabupaten" x-model="form.kode_kabupaten"
                     class="w-full h-10 px-3 text-base text-gray-700 placeholder-gray-300 border rounded-lg focus:shadow-outline" 
                     type="text" 
-                    placeholder="Controller Name">
-                    <small x-text="errMsg.controller_name" class="ml-3 text-xs text-red-500"></small>
+                    placeholder="Kode Kabupaten">
+                    <small x-text="errMsg.kode_kabupaten" class="ml-3 text-xs text-red-500"></small>
                 </div>
                 <div class="w-full px-3 my-3">
-                    <label class="block tracking-wide text-gray-700 text-sm font-bold mb-2" for="controller_desc">
-                        Description
+                    <label class="block tracking-wide text-gray-700 text-sm font-bold mb-2" for="kabupaten">
+                        Kabupaten
                     </label>
-                    <textarea name="controller_desc" x-model="form.controller_desc"
-                    class="w-full h-24 px-3 py-2 text-base text-gray-700 placeholder-gray-300 border rounded-lg focus:shadow-outline" 
+                    <input name="kabupaten" x-model="form.kabupaten"
+                    class="w-full h-10 px-3 text-base text-gray-700 placeholder-gray-300 border rounded-lg focus:shadow-outline" 
                     type="text" 
-                    placeholder="Description">
-                    </textarea>
-                    <small x-text="errMsg.controller_desc" class="ml-3 text-xs text-red-500"></small>
+                    placeholder="Kabupaten">
+                    <small x-text="errMsg.kabupaten" class="ml-3 text-xs text-red-500"></small>
                 </div>
+                <div class="w-full px-3 my-3">
+                    <label class="block tracking-wide text-gray-700 text-sm font-bold mb-2" for="kode_kecamatan">
+                        Kode Kecamatan
+                    </label>
+                    <input name="kode_kecamatan" x-model="form.kode_kecamatan"
+                    class="w-full h-10 px-3 text-base text-gray-700 placeholder-gray-300 border rounded-lg focus:shadow-outline" 
+                    type="text" 
+                    placeholder="Kode Kecamatan">
+                    <small x-text="errMsg.kode_kecamatan" class="ml-3 text-xs text-red-500"></small>
+                </div>
+                <div class="w-full px-3 my-3">
+                    <label class="block tracking-wide text-gray-700 text-sm font-bold mb-2" for="kecamatan">
+                        Kecamatan
+                    </label>
+                    <input name="kecamatan" x-model="form.kecamatan"
+                    class="w-full h-10 px-3 text-base text-gray-700 placeholder-gray-300 border rounded-lg focus:shadow-outline" 
+                    type="text" 
+                    placeholder="Kecamatan">
+                    <small x-text="errMsg.kecamatan" class="ml-3 text-xs text-red-500"></small>
+                </div>
+                
             </div>
             <!-- Buttons -->
             <div class="mt-8 flex space-x-2 justify-end">
@@ -86,10 +118,12 @@
         <x-slot:thead>
             <tr>
                 <th scope="col" class="px-4 py-3">No</th>
-                <th scope="col" class="px-4 py-3">Controller Name</th>
-                <th scope="col" class="px-4 py-3">Description</th>
-                <th scope="col" class="px-4 py-3">Type</th>
-                <th scope="col" class="px-4 py-3">Created At</th>
+                <th scope="col" class="px-4 py-3">Kode Kabupaten</th>
+                <th scope="col" class="px-4 py-3">Kabupaten</th>
+                <th scope="col" class="px-4 py-3">Kode Kecamatan</th>
+                <th scope="col" class="px-4 py-3">Kecamatan</th>
+                <th scope="col" class="px-4 py-3">Author</th>
+                <th scope="col" class="px-4 py-3">Last Updated</th>
                 <th scope="col" class="px-4 py-3">
                     <span class="sr-only">Actions</span>
                 </th>
@@ -99,10 +133,12 @@
             <template x-for="(row, index) in datatable.data" :key="index">
                 <tr x-show="!datatable.loading" class="border-b dark:border-gray-700">
                     <td class="px-4 py-3" x-text="datatable.numbering(index)"></td>
-                    <td class="px-4 py-3" x-text="row.controller_name"></td>
-                    <td class="px-4 py-3" x-text="row.controller_desc"></td>
-                    <td class="px-4 py-3" x-text="row.type"></td>
-                    <td class="px-4 py-3" x-text="row.created_at"></td>
+                    <td class="px-4 py-3" x-text="row.kode_kabupaten"></td>
+                    <td class="px-4 py-3" x-text="row.kabupaten"></td>
+                    <td class="px-4 py-3" x-text="row.kode_kecamatan"></td>
+                    <td class="px-4 py-3" x-text="row.kecamatan"></td>
+                    <td class="px-4 py-3" x-text="row.updated_by"></td>
+                    <td class="px-4 py-3" x-text="row.updated_at"></td>
                     <td class="px-4 py-3 flex items-center justify-end">
                         <template x-if="row.type != 'core'">
                             <div>
@@ -147,6 +183,7 @@
 
 <!-- Your Custom Javascript -->
 @section('_inJs')
-@include('app.managements.controllers._inJs')
+@include('app.data.kecamatan._inJs')
 @endsection
 <!-- /Your Custom Javascript -->
+

@@ -1,7 +1,7 @@
 <script>
     
-    <x-app.datatable.datatablejs :url="env('APP_URL'). '/managements/controllers/datatable'" />
-    function controllersCrud() {
+    <x-app.datatable.datatablejs :url="env('APP_URL'). '/data/kecamatan/datatable'" />
+    function dataCrud() {
         return {
             openModal : false,
             formState : 'save',
@@ -16,12 +16,16 @@
                 message: ''
             },
             form: {
-                controller_name: '',
-                controller_desc: '',
+                kode_kabupaten: '',
+                kabupaten: '',
+                kode_kecamatan: '',
+                kecamatan: '',
             },
             errMsg: {
-                controller_name: '',
-                controller_desc: '',
+                kode_kabupaten: '',
+                kabupaten: '',
+                kode_kecamatan: '',
+                kecamatan: '',
             },
             addData() {
                 this.resetForm()
@@ -50,8 +54,8 @@
             },
             async saveData() {
                     try {
-                        const response = this.formState == 'save' ? await axios.post('{{ env('APP_URL') }}/managements/controllers', this.form) 
-                                                                : await axios.put('{{ env('APP_URL') }}/managements/controllers/' + this.idData, this.form)
+                        const response = this.formState == 'save' ? await axios.post('{{ env('APP_URL') }}/data/kecamatan', this.form) 
+                                                                : await axios.put('{{ env('APP_URL') }}/data/kecamatan/' + this.idData, this.form)
                         if(response.status == 200) {
                             
                             Swal.fire({
@@ -97,12 +101,14 @@
                 this.formState = 'edit'
                 this.loadingState = true
                 try {
-                    const response = await axios.get('{{ env('APP_URL') }}/managements/controllers/'+id);
+                    const response = await axios.get('{{ env('APP_URL') }}/data/kecamatan/'+id);
                     if(response.status == 200) {
-                        const dataApi = response.data.controller;
+                        const dataApi = response.data.data;
                         this.form = {
-                            controller_name: dataApi.controller_name,
-                            controller_desc: dataApi.controller_desc,
+                            kode_kabupaten: dataApi.kode_kabupaten,
+                            kabupaten: dataApi.kabupaten,
+                            kode_kecamatan: dataApi.kode_kecamatan,
+                            kecamatan: dataApi.kecamatan,
                         }
                         this.openModal = true
                         this.loadingState = false
@@ -137,7 +143,7 @@
             },
             async deleteData() {
                 try {
-                    const response = await axios.delete('{{ env('APP_URL') }}/managements/controllers/'+this.idData);
+                    const response = await axios.delete('{{ env('APP_URL') }}/data/kecamatan/'+this.idData);
                     if(response.status == 200) {
                     
                         Swal.fire({
@@ -155,23 +161,51 @@
                         this.loadingState = false
                     }
                 } catch (e) {
+                    this.loadingState = false
                     Swal.fire({
                         icon: 'error',
                         title: "something went wrong",
                         showConfirmButton: false,
                         timer: 1500
                     })
-                    this.loadingState = true
                 }
             },
             resetForm() {
                 this.form = {
-                    controller_name: '',
-                    controller_desc: '',
+                    kode_kabupaten: '',
+                    kabupaten: '',
+                    kode_kecamatan: '',
+                    kecamatan: '',
                 }
                 this.errMsg = {
-                    controller_name: '',
-                    controller_desc: '',
+                    kode_kabupaten: '',
+                    kabupaten: '',
+                    kode_kecamatan: '',
+                    kecamatan: '',
+                }
+            },
+            async synchData() {
+                this.loadingState = true
+                try {
+                    const response = await axios.get('{{ env('APP_URL') }}/data/kecamatan/synch');
+                    if(response.status == 200) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: response.data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        this.loadingState = false
+                        this.datatable.refreshTable()
+                    }
+                } catch (e) {
+                    this.loadingState = false
+                    Swal.fire({
+                        icon: 'error',
+                        title: "something went wrong",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
                 }
             },
             datatable: datatable()
