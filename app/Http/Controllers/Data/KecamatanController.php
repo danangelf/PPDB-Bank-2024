@@ -123,7 +123,6 @@ class KecamatanController extends Controller
     public function datatable(Request $request)
     {
         //
-        //
         $searchColumn = collect(['kabupaten', 'kode_kabupaten', 'kecamatan', 'kode_kecamatan']);
 
         $currentPage = $request->get('page', 1);
@@ -134,8 +133,8 @@ class KecamatanController extends Controller
 
         if($search != ''){
             $searchColumn->map(function($item, $index) use($search, $query){
-                if($index == 0) $query->where($item, 'like', '%' . $search . '%');
-                else $query->orWhere($item, 'like', '%' . $search . '%');
+                if($index == 0) $query->where($item, 'ilike', '%' . $search . '%');
+                else $query->orWhere($item, 'ilike', '%' . $search . '%');
 
             });
         }
@@ -182,6 +181,7 @@ class KecamatanController extends Controller
 
     public function synchronize()
     {
+        $extra_info["token"] = env("TOKEN_API_DISDIK");
         try{
             $response = ApiDisdik::synchKecamatan();
             if($response['error']){
@@ -190,7 +190,7 @@ class KecamatanController extends Controller
                     "table" => "kecamatan",
                     "status_result" => "failed",
                     "msg_result" => $response['message'],
-                    "extra_info" => "",
+                    "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
                     "created_by" => auth()->user()->username,
                 ];
                 
@@ -237,7 +237,7 @@ class KecamatanController extends Controller
                 "status_result" => "success",
                 "result" => json_encode($response['response'], JSON_PRETTY_PRINT),
                 "msg_result" => "",
-                "extra_info" => "Synchronize Kecamatan Success. " . $created . " created, " . $updated . " updated.",
+                "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
                 "created_by" => auth()->user()->username,
             ];
             
@@ -245,7 +245,7 @@ class KecamatanController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Synchronize Kecamatan Success. " . $created . " created, " . $updated . " updated.",
+                'message' => $extra_info["message"],
                 'data' => [
                     "created" => $created,
                     "updated" => $updated
@@ -258,7 +258,7 @@ class KecamatanController extends Controller
                 "table" => "kecamatan",
                 "status_result" => "failed",
                 "msg_result" => $e->getMessage(),
-                "extra_info" => "",
+                "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
                 "created_by" => auth()->user()->username,
             ];
             
@@ -269,5 +269,15 @@ class KecamatanController extends Controller
                 'message' => $e->getMessage()
             ]);
         }
+    }
+
+    public function showall()
+    {
+        $data = Kecamatan::all();
+        return response()->json([
+            'success' => true,
+            'message' => 'List of Kecamatan',
+            'data' => $data
+        ]);
     }
 }

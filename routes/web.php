@@ -86,8 +86,15 @@ Route::middleware(['auth','roleplay','isActiveUser'])->group(function () {
 
     Route::prefix('data')->group(function(){
         Route::get('/kecamatan/synch', [App\Http\Controllers\Data\KecamatanController::class, 'synchronize']);
+        Route::get('/kecamatan/showall', [App\Http\Controllers\Data\KecamatanController::class, 'showall']);
         Route::get('/kecamatan/datatable', [App\Http\Controllers\Data\KecamatanController::class, 'datatable']);
         Route::resource('/kecamatan', App\Http\Controllers\Data\KecamatanController::class)->except(['create', 'edit']);
+
+
+        Route::get('/sekolah/synch/{kode_kecamatan}', [App\Http\Controllers\Data\SekolahController::class, 'synchronize']);
+        Route::get('/sekolah/datatable', [App\Http\Controllers\Data\SekolahController::class, 'datatable']);
+        Route::resource('/sekolah', App\Http\Controllers\Data\SekolahController::class)->except(['create', 'edit']);
+
 
     });
 });

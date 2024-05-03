@@ -26,7 +26,7 @@ class ApiDisdik
     }
     public static function synchSekolah($kode_kecamatan)
     {
-        $response = Http::get(env('API_DISDIK_URL')."/sekolah/".env('API_DISDIK_TOKEN')."/".$kode_kecamatan);
+        $response = Http::withoutVerifying()->get(env('URL_API_DISDIK')."/sekolah/".env('TOKEN_API_DISDIK')."/".$kode_kecamatan);
         if($response->failed()){
             return array(
                 "error" => true,
@@ -42,7 +42,7 @@ class ApiDisdik
     }
     public static function synchPesertaDidik($npsn)
     {
-        $response = Http::get(env('API_DISDIK_URL')."/pd/".env('API_DISDIK_TOKEN')."/".$npsn);
+        $response = Http::withoutVerifying()->get(env('URL_API_DISDIK')."/pd/".env('TOKEN_API_DISDIK')."/".$npsn);
         if($response->failed()){
             return array(
                 "error" => true,
@@ -59,7 +59,7 @@ class ApiDisdik
 
     public static function synchPesertaDidikSingle($niknisn)
     {
-        $response = Http::get(env('API_DISDIK_URL')."/cek_pd/".env('API_DISDIK_TOKEN')."/".$niknisn);
+        $response = Http::get(env('URL_API_DISDIK')."/cek_pd/".env('TOKEN_API_DISDIK')."/".$niknisn);
         if($response->failed()){
             return array(
                 "error" => true,
