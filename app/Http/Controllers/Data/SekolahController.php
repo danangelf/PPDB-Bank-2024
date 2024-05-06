@@ -123,6 +123,7 @@ class SekolahController extends Controller
                 "kecamatan" => $item->kecamatan,
                 "bentuk_pendidikan" => $item->bentuk_pendidikan,
                 "status_sekolah" => $item->status_sekolah,
+                "jml" => $item->jml,
                 "updated_by" => $item->updated_by ? $item->updated_by : $item->created_by,
                 "updated_at" => $updated_at,
             ];

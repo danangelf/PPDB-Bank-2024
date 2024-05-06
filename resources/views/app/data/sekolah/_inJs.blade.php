@@ -27,9 +27,6 @@
                 kode_kecamatan: '',
                 kecamatan: '',
             },
-            params: {
-                kode_kecamatan: '086106'
-            },
             addData() {
                 this.resetForm()
                 this.idData = null
@@ -190,7 +187,17 @@
             async synchData() {
                 this.loadingState = true
                 try {
-                    const response = await axios.get('{{ env('APP_URL') }}/data/sekolah/synch/' + this.params.kode_kecamatan);
+                    if(this.selected.kecamatan === ""){
+                        Swal.fire({
+                            icon: 'warning',
+                            title: "Silakan pilih kecamatan terlebih dahulu",
+                            showConfirmButton: false,
+                            timer: 1500
+                        })
+                        this.loadingState = false
+                        return false
+                    }
+                    const response = await axios.get('{{ env('APP_URL') }}/data/sekolah/synch/' + this.selected.kecamatan);
                     if(response.status == 200) {
                         Swal.fire({
                             icon: 'success',
@@ -210,6 +217,84 @@
                         timer: 1500
                     })
                 }
+            },
+            kabkotaSelect: null,
+            kecamatanSelect: null,
+            kabkotaData: [],
+            kecamatanData: [],
+            selected: {
+                kabkota: '',
+                kecamatan: '',
+            },
+            async getKecamatan()
+            {
+                try {
+                    const response = await axios.get('{{ env('APP_URL') }}/data/kecamatan/showall')
+                    if(response.status == 200) {
+                        this.kabkotaData = response.data.data.kabkota
+                        this.kabkotaData.unshift({kode_kabupaten: '', kabupaten: 'Semua Kabupaten'})
+                        this.kabkotaSelect = new TomSelect('#kabkotaDom',{
+                            valueField: 'kode_kabupaten',
+                            labelField: 'kabupaten',
+                            searchField: 'kabupaten',
+                            options: this.kabkotaData,
+                            render: {
+                                option: function(data, escape) {
+                                    return '<div class="flex flex-col mb-2">' +
+                                                '<span class="px-2 py-1 text-sm font-bold">' + escape(data.kabupaten) + '</span>' +
+                                                '<span class="px-2 text-xs">' + escape(data.kode_kabupaten) + '</span>' +
+                                            '</div>';
+                                },
+                                item: function(data, escape) {
+                                    return '<div title="' + escape(data.kode_kabupaten) + '" class="text-sm font-bold" >' + escape(data.kabupaten) + '</div>';
+                                }
+                            }
+                        }) 
+                        this.kecamatanData = response.data.data.kecamatan
+                        
+                        this.initSelectKecamatan()
+                    }
+                } catch (e) {
+                    console.log(e);
+                    Swal.fire({
+                        icon: 'error',
+                        title: "failed to get kecamatan",
+                        showConfirmButton: false,
+                        timer: 1500
+                    })
+                }
+            },
+            initSelectKecamatan()
+            {
+                this.kecamatanSelect = new TomSelect('#kecamatanDom',{
+                    valueField: 'kode_kecamatan',
+                    labelField: 'kecamatan',
+                    searchField: 'kecamatan',
+                    options: this.filteredKecamatan(),
+                    render: {
+                        option: function(data, escape) {
+                            return '<div class="flex flex-col mb-2">' +
+                                        '<span class="px-2 py-1 text-sm font-bold">' + escape(data.kecamatan) + '</span>' +
+                                        '<span class="px-2 text-xs">' + escape(data.kabupaten) + '</span>' +
+                                    '</div>';
+                        },
+                        item: function(data, escape) {
+                            return '<div title="' + escape(data.kabupaten) + '" class="text-sm font-bold" >' + escape(data.kecamatan) + '</div>';
+                        }
+                    }
+                }) 
+            },
+            filteredKecamatan()
+            {
+                const filtered =  this.selected.kabkota == '' ? this.kecamatanData : this.kecamatanData.filter(item => item.kode_kabupaten == this.selected.kabkota)
+                filtered.unshift({kode_kecamatan: '', kecamatan: 'Semua Kecamatan', kabupaten: "Semua Kecamatan"})
+                return filtered
+            },
+            onChangeKabkota()
+            {
+                this.kecamatanSelect.clear()
+                this.kecamatanSelect.clearOptions()
+                this.kecamatanSelect.addOptions(this.filteredKecamatan(), user_created=false)
             },
             datatable: datatable()
         }

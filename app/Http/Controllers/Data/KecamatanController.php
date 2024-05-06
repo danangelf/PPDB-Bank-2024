@@ -273,11 +273,18 @@ class KecamatanController extends Controller
 
     public function showall()
     {
-        $data = Kecamatan::all();
+        $kabkota = Kecamatan::query()
+                    ->select('kode_kabupaten', 'kabupaten')
+                    ->groupBy('kode_kabupaten','kabupaten')->get();
+        $kecamatan = Kecamatan::all();
+
         return response()->json([
             'success' => true,
             'message' => 'List of Kecamatan',
-            'data' => $data
+            'data' => [
+                "kabkota" => $kabkota,
+                "kecamatan" => $kecamatan
+            ]
         ]);
     }
 }

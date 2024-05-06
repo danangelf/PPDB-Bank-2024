@@ -112,6 +112,30 @@
         </form>
                 
     </x-modal>
+    <div class="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1">
+        <div class="w-full px-3 my-3">
+            <label class="block tracking-wide text-gray-700 text-sm font-bold mb-2" for="kabkota">
+                Kabupaten/ Kota
+            </label>
+            <select name="kabkota" x-model="selected.kabkota"
+            class="w-full h-9 text-base text-gray-700 placeholder-gray-300 border rounded-lg focus:shadow-outline" 
+            type="text" id="kabkotaDom" x-init="getKecamatan" @change="onChangeKabkota"
+            placeholder="Kabupaten/ Kota">
+                <option value="" disabled>Loading...</option>
+            </select>
+        </div>
+        <div class="w-full px-3 my-3">
+            <label class="block tracking-wide text-gray-700 text-sm font-bold mb-2" for="kecamatan">
+                Kecamatan
+            </label>
+            <select name="kecamatan" x-model="selected.kecamatan"
+            class="w-full h-9 text-base text-gray-700 placeholder-gray-300 border rounded-lg focus:shadow-outline" 
+            type="text" id="kecamatanDom"
+            placeholder="Kecamatan">
+                <option value="" disabled>Loading...</option>
+            </select>
+        </div>
+    </div>
 
     <!-- ini datatable -->
     <x-app.datatable.datatable>
@@ -123,6 +147,7 @@
                 <th scope="col" class="px-4 py-3">Kab/Kota</th>
                 <th scope="col" class="px-4 py-3">Kecamatan</th>
                 <th scope="col" class="px-4 py-3">Bentuk Sekolah</th>
+                <th scope="col" class="px-4 py-3">Jumlah Siswa</th>
                 <th scope="col" class="px-4 py-3">Author</th>
                 <th scope="col" class="px-4 py-3">Last Updated</th>
                 <th scope="col" class="px-4 py-3">
@@ -139,6 +164,7 @@
                     <td class="px-4 py-3" x-html="row.kode_kabupaten + ' - ' + row.kabupaten"></td>
                     <td class="px-4 py-3" x-html="row.kode_kecamatan + ' - ' + row.kecamatan"></td>
                     <td class="px-4 py-3" x-html="row.bentuk_pendidikan + ' ' + row.status_sekolah"></td>
+                    <td class="px-4 py-3 text-right" x-text="row.jml"></td>
                     <td class="px-4 py-3" x-text="row.updated_by"></td>
                     <td class="px-4 py-3" x-text="row.updated_at"></td>
                     <td class="px-4 py-3 flex items-center justify-end">
