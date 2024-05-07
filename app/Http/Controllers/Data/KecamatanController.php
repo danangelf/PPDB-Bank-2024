@@ -212,19 +212,18 @@ class KecamatanController extends Controller
                     $kec = new Kecamatan();
                     $kec->id = Str::uuid();
                     $kec->created_by = auth()->user()->username;
-                    $kec->kode_kecamatan = $item["kode_kecamatan"];
-                    $kec->kecamatan = $item["kecamatan"];
-                    $kec->kode_kabupaten = $item["kode_kabupaten"];
-                    $kec->kabupaten = $item["kabupaten"];
+                    $kec->kode_kecamatan = trim($item["kode_kecamatan"]);
+                    $kec->kecamatan = trim($item["kecamatan"]);
+                    $kec->kode_kabupaten = trim($item["kode_kabupaten"]);
+                    $kec->kabupaten = trim($item["kabupaten"]);
                     $kec->save();
                     $created++;
                 }
                 else{
                     $kec->updated_by = auth()->user()->username;
-                    $kec->kode_kecamatan = $item["kode_kecamatan"];
-                    $kec->kecamatan = $item["kecamatan"];
-                    $kec->kode_kabupaten = $item["kode_kabupaten"];
-                    $kec->kabupaten = $item["kabupaten"];
+                    $kec->kecamatan = trim($item["kecamatan"]);
+                    $kec->kode_kabupaten = trim($item["kode_kabupaten"]);
+                    $kec->kabupaten = trim($item["kabupaten"]);
                     $kec->save();
                     $updated++;
                 }

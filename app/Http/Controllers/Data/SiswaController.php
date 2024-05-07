@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Data;
 use App\Helpers\ApiDisdik;
 use App\Models\Data\Siswa;
 use Illuminate\Support\Str;
+use App\Models\Data\Sekolah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Models\Data\LogSynchronize;
@@ -143,14 +144,15 @@ class SiswaController extends Controller
     public function synchronize($npsn)
     {
         $extra_info["token"] = env("TOKEN_API_DISDIK");
-        $extra_info["npsn"] = $npsn;
-        $allowed_bentuk_pendidikan = ["SMP", "MTs"];
+        $params["npsn"] = $npsn;
+        $allowed_tingkat_pendidikan = 9;
         try{
             $response = ApiDisdik::synchPesertaDidik($npsn);
             if($response['error']){
                 $log = [
                     "id" => Str::uuid(),
                     "table" => "siswa",
+                    "params" => json_encode($params, JSON_PRETTY_PRINT),
                     "status_result" => "failed",
                     "msg_result" => $response['message'],
                     "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
@@ -167,93 +169,173 @@ class SiswaController extends Controller
 
             $updated = 0;
             $created = 0;
-
+            $sekolah_id = "";
             $rawData = $response["response"];
-            foreach($rawData as $item){
-                // if(in_array($item["bentuk_pendidikan"], $allowed_bentuk_pendidikan)){
-                    
+            foreach($rawData as $key => $item){
+                if($key == 0){
+                    $sekolah_id = $item->sekolah_id;
+                }
+                if($item->tingkat_pendidikan_id == $allowed_tingkat_pendidikan){
                     $data = Siswa::where("peserta_didik_id", $item["peserta_didik_id"])->first();
                     if(!$data){
                         $data = new Siswa();
                         $data->id = Str::uuid();
                         $data->created_by = auth()->user()->username;
-                        $data->sekolah_id = $item["sekolah_id"];
-                        $data->nama = $item["nama"];
-                        $data->npsn = $item["npsn"];
-                        $data->nss = $item["nss"];
-                        $data->bentuk_pendidikan_id = $item["bentuk_pendidikan_id"];
-                        $data->bentuk_pendidikan = $item["bentuk_pendidikan"];
-                        $data->status_sekolah_id = $item["status_sekolah_id"];
-                        $data->status_sekolah = $item["status_sekolah"];
-                        $data->alamat_jalan = $item["alamat_jalan"];
-                        $data->rt = $item["rt"];
-                        $data->rw = $item["rw"];
-                        $data->nama_dusun = $item["nama_dusun"];
-                        $data->kode_wilayah = $item["kode_wilayah"];
-                        $data->kode_desa_kelurahan = $item["kode_desa_kelurahan"];
-                        $data->desa_kelurahan = $item["desa_kelurahan"];
-                        $data->kode_kecamatan = $item["kode_kecamatan"];
-                        $data->kecamatan = $item["kecamatan"];
-                        $data->kode_kabupaten = $item["kode_kabupaten"];
-                        $data->kabupaten = $item["kabupaten"];
-                        $data->kode_provinsi = $item["kode_provinsi"];
-                        $data->provinsi = $item["provinsi"];
-                        $data->kode_pos = $item["kode_pos"];
-                        $data->lintang = $item["lintang"];
-                        $data->bujur = $item["bujur"];
-                        $data->nomor_telepon = $item["nomor_telepon"];
-                        $data->nomor_fax = $item["nomor_fax"];
-                        $data->email = $item["email"];
-                        $data->website = $item["website"];
+                        $data->peserta_didik_id = trim($item["peserta_didik_id"]);
+                        $data->sekolah_id = trim($item["sekolah_id"]);
+                        $data->nama = trim($item["nama"]);
+                        $data->jenis_kelamin = trim($item["jenis_kelamin"]);
+                        $data->nisn = trim($item["nisn"]);
+                        $data->nik = trim($item["nik"]);
+                        $data->no_kk = trim($item["no_kk"]);
+                        $data->tempat_lahir = trim($item["tempat_lahir"]);
+                        $data->tanggal_lahir = trim($item["tanggal_lahir"]);
+                        $data->agama_id = trim($item["agama_id"]);
+                        $data->agama = trim($item["agama"]);
+                        $data->kewarganegaraan = trim($item["kewarganegaraan"]);
+                        $data->alamat_jalan = trim($item["alamat_jalan"]);
+                        $data->rt = trim($item["rt"]);
+                        $data->rw = trim($item["rw"]);
+                        $data->nama_dusun = trim($item["nama_dusun"]);
+                        $data->kode_wilayah = trim($item["kode_wilayah"]);
+                        $data->kode_desa_kelurahan = trim($item["kode_desa_kelurahan"]);
+                        $data->desa_kelurahan = trim($item["desa_kelurahan"]);
+                        $data->kode_kecamatan = trim($item["kode_kecamatan"]);
+                        $data->kecamatan = trim($item["kecamatan"]);
+                        $data->kode_kabupaten = trim($item["kode_kabupaten"]);
+                        $data->kabupaten = trim($item["kabupaten"]);
+                        $data->kode_provinsi = trim($item["kode_provinsi"]);
+                        $data->provinsi = trim($item["provinsi"]);
+                        $data->kode_pos = trim($item["kode_pos"]);
+                        $data->lintang = trim($item["lintang"]);
+                        $data->bujur = trim($item["bujur"]);
+                        $data->nik_ayah = trim($item["nik_ayah"]);
+                        $data->nama_ayah = trim($item["nama_ayah"]);
+                        $data->tahun_lahir_ayah = trim($item["tahun_lahir_ayah"]);
+                        $data->pekerjaan_id_ayah = trim($item["pekerjaan_id_ayah"]);
+                        $data->pekerjaan_ayah = trim($item["pekerjaan_ayah"]);
+                        $data->penghasilan_id_ayah = trim($item["penghasilan_id_ayah"]);
+                        $data->penghasilan_ayah = trim($item["penghasilan_ayah"]);
+                        $data->jenjang_pendidikan_ayah = trim($item["jenjang_pendidikan_ayah"]);
+                        $data->jenjang_pendidikan_ayah_keterangan = trim($item["jenjang_pendidikan_ayah_keterangan"]);
+                        $data->nik_ibu = trim($item["nik_ibu"]);
+                        $data->nama_ibu = trim($item["nama_ibu"]);
+                        $data->tahun_lahir_ibu = trim($item["tahun_lahir_ibu"]);
+                        $data->pekerjaan_id_ibu = trim($item["pekerjaan_id_ibu"]);
+                        $data->pekerjaan_ibu = trim($item["pekerjaan_ibu"]);
+                        $data->penghasilan_id_ibu = trim($item["penghasilan_id_ibu"]);
+                        $data->penghasilan_ibu = trim($item["penghasilan_ibu"]);
+                        $data->jenjang_pendidikan_ibu = trim($item["jenjang_pendidikan_ibu"]);
+                        $data->jenjang_pendidikan_ibu_keterangan = trim($item["jenjang_pendidikan_ibu_keterangan"]);
+                        $data->nik_wali = trim($item["nik_wali"]);
+                        $data->nama_wali = trim($item["nama_wali"]);
+                        $data->tahun_lahir_wali = trim($item["tahun_lahir_wali"]);
+                        $data->pekerjaan_id_wali = trim($item["pekerjaan_id_wali"]);
+                        $data->pekerjaan_wali = trim($item["pekerjaan_wali"]);
+                        $data->penghasilan_id_wali = trim($item["penghasilan_id_wali"]);
+                        $data->penghasilan_wali = trim($item["penghasilan_wali"]);
+                        $data->jenjang_pendidikan_wali = trim($item["jenjang_pendidikan_wali"]);
+                        $data->jenjang_pendidikan_wali_keterangan = trim($item["jenjang_pendidikan_wali_keterangan"]);
+                        $data->nomor_telepon_rumah = trim($item["nomor_telepon_rumah"]);
+                        $data->nomor_telepon_seluler = trim($item["nomor_telepon_seluler"]);
+                        $data->layak_PIP = trim($item["layak_PIP"]);
+                        $data->nomor_KIP = trim($item["nomor_KIP"]);
+                        $data->nm_KIP = trim($item["nm_KIP"]);
+                        $data->raw_json = json_encode($item, JSON_PRETTY_PRINT);
                         $data->save();
                         $created++;
                     }
                     else{
                         $data->updated_by = auth()->user()->username;
-                        $data->nama = $item["nama"];
-                        $data->npsn = $item["npsn"];
-                        $data->nss = $item["nss"];
-                        $data->bentuk_pendidikan_id = $item["bentuk_pendidikan_id"];
-                        $data->bentuk_pendidikan = $item["bentuk_pendidikan"];
-                        $data->status_sekolah_id = $item["status_sekolah_id"];
-                        $data->status_sekolah = $item["status_sekolah"];
-                        $data->alamat_jalan = $item["alamat_jalan"];
-                        $data->rt = $item["rt"];
-                        $data->rw = $item["rw"];
-                        $data->nama_dusun = $item["nama_dusun"];
-                        $data->kode_wilayah = $item["kode_wilayah"];
-                        $data->kode_desa_kelurahan = $item["kode_desa_kelurahan"];
-                        $data->desa_kelurahan = $item["desa_kelurahan"];
-                        $data->kode_kecamatan = $item["kode_kecamatan"];
-                        $data->kecamatan = $item["kecamatan"];
-                        $data->kode_kabupaten = $item["kode_kabupaten"];
-                        $data->kabupaten = $item["kabupaten"];
-                        $data->kode_provinsi = $item["kode_provinsi"];
-                        $data->provinsi = $item["provinsi"];
-                        $data->kode_pos = $item["kode_pos"];
-                        $data->lintang = $item["lintang"];
-                        $data->bujur = $item["bujur"];
-                        $data->nomor_telepon = $item["nomor_telepon"];
-                        $data->nomor_fax = $item["nomor_fax"];
-                        $data->email = $item["email"];
-                        $data->website = $item["website"];
+                        $data->sekolah_id = trim($item["sekolah_id"]);
+                        $data->nama = trim($item["nama"]);
+                        $data->jenis_kelamin = trim($item["jenis_kelamin"]);
+                        $data->nisn = trim($item["nisn"]);
+                        $data->nik = trim($item["nik"]);
+                        $data->no_kk = trim($item["no_kk"]);
+                        $data->tempat_lahir = trim($item["tempat_lahir"]);
+                        $data->tanggal_lahir = trim($item["tanggal_lahir"]);
+                        $data->agama_id = trim($item["agama_id"]);
+                        $data->agama = trim($item["agama"]);
+                        $data->kewarganegaraan = trim($item["kewarganegaraan"]);
+                        $data->alamat_jalan = trim($item["alamat_jalan"]);
+                        $data->rt = trim($item["rt"]);
+                        $data->rw = trim($item["rw"]);
+                        $data->nama_dusun = trim($item["nama_dusun"]);
+                        $data->kode_wilayah = trim($item["kode_wilayah"]);
+                        $data->kode_desa_kelurahan = trim($item["kode_desa_kelurahan"]);
+                        $data->desa_kelurahan = trim($item["desa_kelurahan"]);
+                        $data->kode_kecamatan = trim($item["kode_kecamatan"]);
+                        $data->kecamatan = trim($item["kecamatan"]);
+                        $data->kode_kabupaten = trim($item["kode_kabupaten"]);
+                        $data->kabupaten = trim($item["kabupaten"]);
+                        $data->kode_provinsi = trim($item["kode_provinsi"]);
+                        $data->provinsi = trim($item["provinsi"]);
+                        $data->kode_pos = trim($item["kode_pos"]);
+                        $data->lintang = trim($item["lintang"]);
+                        $data->bujur = trim($item["bujur"]);
+                        $data->nik_ayah = trim($item["nik_ayah"]);
+                        $data->nama_ayah = trim($item["nama_ayah"]);
+                        $data->tahun_lahir_ayah = trim($item["tahun_lahir_ayah"]);
+                        $data->pekerjaan_id_ayah = trim($item["pekerjaan_id_ayah"]);
+                        $data->pekerjaan_ayah = trim($item["pekerjaan_ayah"]);
+                        $data->penghasilan_id_ayah = trim($item["penghasilan_id_ayah"]);
+                        $data->penghasilan_ayah = trim($item["penghasilan_ayah"]);
+                        $data->jenjang_pendidikan_ayah = trim($item["jenjang_pendidikan_ayah"]);
+                        $data->jenjang_pendidikan_ayah_keterangan = trim($item["jenjang_pendidikan_ayah_keterangan"]);
+                        $data->nik_ibu = trim($item["nik_ibu"]);
+                        $data->nama_ibu = trim($item["nama_ibu"]);
+                        $data->tahun_lahir_ibu = trim($item["tahun_lahir_ibu"]);
+                        $data->pekerjaan_id_ibu = trim($item["pekerjaan_id_ibu"]);
+                        $data->pekerjaan_ibu = trim($item["pekerjaan_ibu"]);
+                        $data->penghasilan_id_ibu = trim($item["penghasilan_id_ibu"]);
+                        $data->penghasilan_ibu = trim($item["penghasilan_ibu"]);
+                        $data->jenjang_pendidikan_ibu = trim($item["jenjang_pendidikan_ibu"]);
+                        $data->jenjang_pendidikan_ibu_keterangan = trim($item["jenjang_pendidikan_ibu_keterangan"]);
+                        $data->nik_wali = trim($item["nik_wali"]);
+                        $data->nama_wali = trim($item["nama_wali"]);
+                        $data->tahun_lahir_wali = trim($item["tahun_lahir_wali"]);
+                        $data->pekerjaan_id_wali = trim($item["pekerjaan_id_wali"]);
+                        $data->pekerjaan_wali = trim($item["pekerjaan_wali"]);
+                        $data->penghasilan_id_wali = trim($item["penghasilan_id_wali"]);
+                        $data->penghasilan_wali = trim($item["penghasilan_wali"]);
+                        $data->jenjang_pendidikan_wali = trim($item["jenjang_pendidikan_wali"]);
+                        $data->jenjang_pendidikan_wali_keterangan = trim($item["jenjang_pendidikan_wali_keterangan"]);
+                        $data->nomor_telepon_rumah = trim($item["nomor_telepon_rumah"]);
+                        $data->nomor_telepon_seluler = trim($item["nomor_telepon_seluler"]);
+                        $data->layak_PIP = trim($item["layak_PIP"]);
+                        $data->nomor_KIP = trim($item["nomor_KIP"]);
+                        $data->nm_KIP = trim($item["nm_KIP"]);
+                        $data->raw_json = json_encode($item, JSON_PRETTY_PRINT);
                         $data->save();
                         $updated++;
                     }
-                // }
+                }
             }
             $extra_info["message"] = "Synchronize Siswa Success. " . $created . " created, " . $updated . " updated.";
+
+            // update jumlah siswa pada tabel sekolah
+            $jumlahSiswa = Siswa::where('sekolah_id', $sekolah_id)->count();
+            $extra_info['jumlah_siswa'] = $jumlahSiswa;
+
+            $school = Sekolah::where('sekolah_id', $sekolah_id)->first();
+            if ($school) {
+                $school->jml = $jumlahSiswa;
+                $school->save();
+            }
+
+            // rekam log
             $log = [
                 "id" => Str::uuid(),
                 "table" => "siswa",
-                "params" => "",
+                "params" => json_encode($params, JSON_PRETTY_PRINT),
                 "status_result" => "success",
                 "result" => json_encode($response['response'], JSON_PRETTY_PRINT),
                 "msg_result" => "",
                 "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
                 "created_by" => auth()->user()->username,
             ];
-            
+
             LogSynchronize::create($log);
 
             return response()->json([
@@ -268,7 +350,8 @@ class SiswaController extends Controller
         catch(\Exception $e){
             $log = [
                 "id" => Str::uuid(),
-                "table" => "sekolah",
+                "table" => "siswa",
+                "params" => json_encode($params, JSON_PRETTY_PRINT),
                 "status_result" => "failed",
                 "msg_result" => $e->getMessage(),
                 "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),

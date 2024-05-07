@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use App\Models\Data\Sekolah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Models\Data\LogSynchronize;
 use App\Http\Controllers\Controller;
 
@@ -144,7 +145,7 @@ class SekolahController extends Controller
     public function synchronize($kode_kecamatan)
     {
         $extra_info["token"] = env("TOKEN_API_DISDIK");
-        $extra_info["kode_kecamatan"] = $kode_kecamatan;
+        $params["kode_kecamatan"] = $kode_kecamatan;
         $allowed_bentuk_pendidikan = ["SMP", "MTs"];
         try{
             $response = ApiDisdik::synchSekolah($kode_kecamatan);
@@ -152,6 +153,7 @@ class SekolahController extends Controller
                 $log = [
                     "id" => Str::uuid(),
                     "table" => "sekolah",
+                    "params" => json_encode($params, JSON_PRETTY_PRINT),
                     "status_result" => "failed",
                     "msg_result" => $response['message'],
                     "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
@@ -178,66 +180,66 @@ class SekolahController extends Controller
                         $data = new Sekolah();
                         $data->id = Str::uuid();
                         $data->created_by = auth()->user()->username;
-                        $data->sekolah_id = $item["sekolah_id"];
-                        $data->nama = $item["nama"];
-                        $data->npsn = $item["npsn"];
-                        $data->nss = $item["nss"];
-                        $data->bentuk_pendidikan_id = $item["bentuk_pendidikan_id"];
-                        $data->bentuk_pendidikan = $item["bentuk_pendidikan"];
-                        $data->status_sekolah_id = $item["status_sekolah_id"];
-                        $data->status_sekolah = $item["status_sekolah"];
-                        $data->alamat_jalan = $item["alamat_jalan"];
-                        $data->rt = $item["rt"];
-                        $data->rw = $item["rw"];
-                        $data->nama_dusun = $item["nama_dusun"];
-                        $data->kode_wilayah = $item["kode_wilayah"];
-                        $data->kode_desa_kelurahan = $item["kode_desa_kelurahan"];
-                        $data->desa_kelurahan = $item["desa_kelurahan"];
-                        $data->kode_kecamatan = $item["kode_kecamatan"];
-                        $data->kecamatan = $item["kecamatan"];
-                        $data->kode_kabupaten = $item["kode_kabupaten"];
-                        $data->kabupaten = $item["kabupaten"];
-                        $data->kode_provinsi = $item["kode_provinsi"];
-                        $data->provinsi = $item["provinsi"];
-                        $data->kode_pos = $item["kode_pos"];
-                        $data->lintang = $item["lintang"];
-                        $data->bujur = $item["bujur"];
-                        $data->nomor_telepon = $item["nomor_telepon"];
-                        $data->nomor_fax = $item["nomor_fax"];
-                        $data->email = $item["email"];
-                        $data->website = $item["website"];
+                        $data->sekolah_id = trim($item["sekolah_id"]);
+                        $data->nama = trim($item["nama"]);
+                        $data->npsn = trim($item["npsn"]);
+                        $data->nss = trim($item["nss"]);
+                        $data->bentuk_pendidikan_id = trim($item["bentuk_pendidikan_id"]);
+                        $data->bentuk_pendidikan = trim($item["bentuk_pendidikan"]);
+                        $data->status_sekolah_id = trim($item["status_sekolah_id"]);
+                        $data->status_sekolah = trim($item["status_sekolah"]);
+                        $data->alamat_jalan = trim($item["alamat_jalan"]);
+                        $data->rt = trim($item["rt"]);
+                        $data->rw = trim($item["rw"]);
+                        $data->nama_dusun = trim($item["nama_dusun"]);
+                        $data->kode_wilayah = trim($item["kode_wilayah"]);
+                        $data->kode_desa_kelurahan = trim($item["kode_desa_kelurahan"]);
+                        $data->desa_kelurahan = trim($item["desa_kelurahan"]);
+                        $data->kode_kecamatan = trim($item["kode_kecamatan"]);
+                        $data->kecamatan = trim($item["kecamatan"]);
+                        $data->kode_kabupaten = trim($item["kode_kabupaten"]);
+                        $data->kabupaten = trim($item["kabupaten"]);
+                        $data->kode_provinsi = trim($item["kode_provinsi"]);
+                        $data->provinsi = trim($item["provinsi"]);
+                        $data->kode_pos = trim($item["kode_pos"]);
+                        $data->lintang = trim($item["lintang"]);
+                        $data->bujur = trim($item["bujur"]);
+                        $data->nomor_telepon = trim($item["nomor_telepon"]);
+                        $data->nomor_fax = trim($item["nomor_fax"]);
+                        $data->email = trim($item["email"]);
+                        $data->website = trim($item["website"]);
                         $data->save();
                         $created++;
                     }
                     else{
                         $data->updated_by = auth()->user()->username;
-                        $data->nama = $item["nama"];
-                        $data->npsn = $item["npsn"];
-                        $data->nss = $item["nss"];
-                        $data->bentuk_pendidikan_id = $item["bentuk_pendidikan_id"];
-                        $data->bentuk_pendidikan = $item["bentuk_pendidikan"];
-                        $data->status_sekolah_id = $item["status_sekolah_id"];
-                        $data->status_sekolah = $item["status_sekolah"];
-                        $data->alamat_jalan = $item["alamat_jalan"];
-                        $data->rt = $item["rt"];
-                        $data->rw = $item["rw"];
-                        $data->nama_dusun = $item["nama_dusun"];
-                        $data->kode_wilayah = $item["kode_wilayah"];
-                        $data->kode_desa_kelurahan = $item["kode_desa_kelurahan"];
-                        $data->desa_kelurahan = $item["desa_kelurahan"];
-                        $data->kode_kecamatan = $item["kode_kecamatan"];
-                        $data->kecamatan = $item["kecamatan"];
-                        $data->kode_kabupaten = $item["kode_kabupaten"];
-                        $data->kabupaten = $item["kabupaten"];
-                        $data->kode_provinsi = $item["kode_provinsi"];
-                        $data->provinsi = $item["provinsi"];
-                        $data->kode_pos = $item["kode_pos"];
-                        $data->lintang = $item["lintang"];
-                        $data->bujur = $item["bujur"];
-                        $data->nomor_telepon = $item["nomor_telepon"];
-                        $data->nomor_fax = $item["nomor_fax"];
-                        $data->email = $item["email"];
-                        $data->website = $item["website"];
+                        $data->nama = trim($item["nama"]);
+                        $data->npsn = trim($item["npsn"]);
+                        $data->nss = trim($item["nss"]);
+                        $data->bentuk_pendidikan_id = trim($item["bentuk_pendidikan_id"]);
+                        $data->bentuk_pendidikan = trim($item["bentuk_pendidikan"]);
+                        $data->status_sekolah_id = trim($item["status_sekolah_id"]);
+                        $data->status_sekolah = trim($item["status_sekolah"]);
+                        $data->alamat_jalan = trim($item["alamat_jalan"]);
+                        $data->rt = trim($item["rt"]);
+                        $data->rw = trim($item["rw"]);
+                        $data->nama_dusun = trim($item["nama_dusun"]);
+                        $data->kode_wilayah = trim($item["kode_wilayah"]);
+                        $data->kode_desa_kelurahan = trim($item["kode_desa_kelurahan"]);
+                        $data->desa_kelurahan = trim($item["desa_kelurahan"]);
+                        $data->kode_kecamatan = trim($item["kode_kecamatan"]);
+                        $data->kecamatan = trim($item["kecamatan"]);
+                        $data->kode_kabupaten = trim($item["kode_kabupaten"]);
+                        $data->kabupaten = trim($item["kabupaten"]);
+                        $data->kode_provinsi = trim($item["kode_provinsi"]);
+                        $data->provinsi = trim($item["provinsi"]);
+                        $data->kode_pos = trim($item["kode_pos"]);
+                        $data->lintang = trim($item["lintang"]);
+                        $data->bujur = trim($item["bujur"]);
+                        $data->nomor_telepon = trim($item["nomor_telepon"]);
+                        $data->nomor_fax = trim($item["nomor_fax"]);
+                        $data->email = trim($item["email"]);
+                        $data->website = trim($item["website"]);
                         $data->save();
                         $updated++;
                     }
@@ -247,7 +249,7 @@ class SekolahController extends Controller
             $log = [
                 "id" => Str::uuid(),
                 "table" => "sekolah",
-                "params" => "",
+                "params" => json_encode($params, JSON_PRETTY_PRINT),
                 "status_result" => "success",
                 "result" => json_encode($response['response'], JSON_PRETTY_PRINT),
                 "msg_result" => "",
@@ -270,6 +272,7 @@ class SekolahController extends Controller
             $log = [
                 "id" => Str::uuid(),
                 "table" => "sekolah",
+                "params" => json_encode($params, JSON_PRETTY_PRINT),
                 "status_result" => "failed",
                 "msg_result" => $e->getMessage(),
                 "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
@@ -283,5 +286,15 @@ class SekolahController extends Controller
                 'message' => $e->getMessage()
             ]);
         }
+    }
+
+    public function showall($kode_kecamatan)
+    {
+        $data = Sekolah::where('kode_kecamatan', '=', $kode_kecamatan)->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'List of Sekolah',
+            'data' => $data
+        ]);
     }
 }

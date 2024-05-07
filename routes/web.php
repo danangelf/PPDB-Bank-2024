@@ -91,9 +91,14 @@ Route::middleware(['auth','roleplay','isActiveUser'])->group(function () {
         Route::resource('/kecamatan', App\Http\Controllers\Data\KecamatanController::class)->except(['create', 'edit']);
 
 
+        Route::get('/sekolah/showall/{kode_kecamatan}', [App\Http\Controllers\Data\SekolahController::class, 'showall']);
         Route::get('/sekolah/synch/{kode_kecamatan}', [App\Http\Controllers\Data\SekolahController::class, 'synchronize']);
         Route::get('/sekolah/datatable', [App\Http\Controllers\Data\SekolahController::class, 'datatable']);
         Route::resource('/sekolah', App\Http\Controllers\Data\SekolahController::class)->except(['create', 'edit']);
+
+        Route::get('/siswa/synch/{kode_kecamatan}', [App\Http\Controllers\Data\SiswaController::class, 'synchronize']);
+        Route::get('/siswa/datatable', [App\Http\Controllers\Data\SiswaController::class, 'datatable']);
+        Route::resource('/siswa', App\Http\Controllers\Data\SiswaController::class)->except(['create', 'edit']);
 
 
     });
