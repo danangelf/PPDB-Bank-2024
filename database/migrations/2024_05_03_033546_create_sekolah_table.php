@@ -41,6 +41,8 @@ return new class extends Migration
             $table->string('nomor_fax')->nullable();
             $table->string('email')->nullable();
             $table->string('website')->nullable();
+            $table->text('raw_json')->nullable();
+            $table->unsignedInteger('jml')->nullable();
             $table->string('created_by', 100)->nullable();
             $table->string('updated_by', 100)->nullable();
             $table->timestamps();

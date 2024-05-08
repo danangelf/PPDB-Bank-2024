@@ -187,17 +187,17 @@
             async synchData() {
                 this.loadingState = true
                 try {
-                    if(this.selected.kecamatan === ""){
+                    if(this.selected.sekolah === ""){
                         Swal.fire({
                             icon: 'warning',
-                            title: "Silakan pilih kecamatan terlebih dahulu",
+                            title: "Silakan pilih sekolah terlebih dahulu",
                             showConfirmButton: false,
                             timer: 1500
                         })
                         this.loadingState = false
                         return false
                     }
-                    const response = await axios.get('{{ env('APP_URL') }}/data/siswa/synch/' + this.selected.kecamatan);
+                    const response = await axios.get('{{ env('APP_URL') }}/data/siswa/synch/' + this.selected.sekolah);
                     if(response.status == 200) {
                         Swal.fire({
                             icon: 'success',
@@ -227,6 +227,7 @@
             selected: {
                 kabkota: '',
                 kecamatan: '',
+                sekolah: ''
             },
             async getKecamatan()
             {

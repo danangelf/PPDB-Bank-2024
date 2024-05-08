@@ -173,10 +173,10 @@ class SiswaController extends Controller
             $rawData = $response["response"];
             foreach($rawData as $key => $item){
                 if($key == 0){
-                    $sekolah_id = $item->sekolah_id;
+                    $sekolah_id = trim($item["sekolah_id"]);
                 }
-                if($item->tingkat_pendidikan_id == $allowed_tingkat_pendidikan){
-                    $data = Siswa::where("peserta_didik_id", $item["peserta_didik_id"])->first();
+                if($item['tingkat_pendidikan_id'] == $allowed_tingkat_pendidikan){
+                    $data = Siswa::where("peserta_didik_id", trim($item["peserta_didik_id"]))->first();
                     if(!$data){
                         $data = new Siswa();
                         $data->id = Str::uuid();
@@ -198,7 +198,6 @@ class SiswaController extends Controller
                         $data->rw = trim($item["rw"]);
                         $data->nama_dusun = trim($item["nama_dusun"]);
                         $data->kode_wilayah = trim($item["kode_wilayah"]);
-                        $data->kode_desa_kelurahan = trim($item["kode_desa_kelurahan"]);
                         $data->desa_kelurahan = trim($item["desa_kelurahan"]);
                         $data->kode_kecamatan = trim($item["kode_kecamatan"]);
                         $data->kecamatan = trim($item["kecamatan"]);
@@ -219,7 +218,7 @@ class SiswaController extends Controller
                         $data->jenjang_pendidikan_ayah = trim($item["jenjang_pendidikan_ayah"]);
                         $data->jenjang_pendidikan_ayah_keterangan = trim($item["jenjang_pendidikan_ayah_keterangan"]);
                         $data->nik_ibu = trim($item["nik_ibu"]);
-                        $data->nama_ibu = trim($item["nama_ibu"]);
+                        $data->nama_ibu_kandung = trim($item["nama_ibu_kandung"]);
                         $data->tahun_lahir_ibu = trim($item["tahun_lahir_ibu"]);
                         $data->pekerjaan_id_ibu = trim($item["pekerjaan_id_ibu"]);
                         $data->pekerjaan_ibu = trim($item["pekerjaan_ibu"]);
@@ -239,7 +238,7 @@ class SiswaController extends Controller
                         $data->nomor_telepon_rumah = trim($item["nomor_telepon_rumah"]);
                         $data->nomor_telepon_seluler = trim($item["nomor_telepon_seluler"]);
                         $data->layak_PIP = trim($item["layak_PIP"]);
-                        $data->nomor_KIP = trim($item["nomor_KIP"]);
+                        $data->no_KIP = trim($item["no_KIP"]);
                         $data->nm_KIP = trim($item["nm_KIP"]);
                         $data->raw_json = json_encode($item, JSON_PRETTY_PRINT);
                         $data->save();
@@ -263,7 +262,6 @@ class SiswaController extends Controller
                         $data->rw = trim($item["rw"]);
                         $data->nama_dusun = trim($item["nama_dusun"]);
                         $data->kode_wilayah = trim($item["kode_wilayah"]);
-                        $data->kode_desa_kelurahan = trim($item["kode_desa_kelurahan"]);
                         $data->desa_kelurahan = trim($item["desa_kelurahan"]);
                         $data->kode_kecamatan = trim($item["kode_kecamatan"]);
                         $data->kecamatan = trim($item["kecamatan"]);
@@ -284,7 +282,7 @@ class SiswaController extends Controller
                         $data->jenjang_pendidikan_ayah = trim($item["jenjang_pendidikan_ayah"]);
                         $data->jenjang_pendidikan_ayah_keterangan = trim($item["jenjang_pendidikan_ayah_keterangan"]);
                         $data->nik_ibu = trim($item["nik_ibu"]);
-                        $data->nama_ibu = trim($item["nama_ibu"]);
+                        $data->nama_ibu_kandung = trim($item["nama_ibu_kandung"]);
                         $data->tahun_lahir_ibu = trim($item["tahun_lahir_ibu"]);
                         $data->pekerjaan_id_ibu = trim($item["pekerjaan_id_ibu"]);
                         $data->pekerjaan_ibu = trim($item["pekerjaan_ibu"]);
@@ -304,7 +302,7 @@ class SiswaController extends Controller
                         $data->nomor_telepon_rumah = trim($item["nomor_telepon_rumah"]);
                         $data->nomor_telepon_seluler = trim($item["nomor_telepon_seluler"]);
                         $data->layak_PIP = trim($item["layak_PIP"]);
-                        $data->nomor_KIP = trim($item["nomor_KIP"]);
+                        $data->no_KIP = trim($item["no_KIP"]);
                         $data->nm_KIP = trim($item["nm_KIP"]);
                         $data->raw_json = json_encode($item, JSON_PRETTY_PRINT);
                         $data->save();

@@ -208,6 +208,7 @@ class SekolahController extends Controller
                         $data->nomor_fax = trim($item["nomor_fax"]);
                         $data->email = trim($item["email"]);
                         $data->website = trim($item["website"]);
+                        $data->raw_json = json_encode($item, JSON_PRETTY_PRINT);
                         $data->save();
                         $created++;
                     }
@@ -240,6 +241,7 @@ class SekolahController extends Controller
                         $data->nomor_fax = trim($item["nomor_fax"]);
                         $data->email = trim($item["email"]);
                         $data->website = trim($item["website"]);
+                        $data->raw_json = json_encode($item, JSON_PRETTY_PRINT);
                         $data->save();
                         $updated++;
                     }

@@ -50,7 +50,7 @@ return new class extends Migration
             $table->string('jenjang_pendidikan_ayah');
             $table->string('jenjang_pendidikan_ayah_keterangan');
             $table->string('nik_ibu');
-            $table->string('nama_ibu');
+            $table->string('nama_ibu_kandung');
             $table->string('tahun_lahir_ibu');
             $table->string('pekerjaan_id_ibu');
             $table->string('pekerjaan_ibu');
@@ -70,7 +70,7 @@ return new class extends Migration
             $table->string('nomor_telepon_rumah');
             $table->string('nomor_telepon_seluler');
             $table->string('layak_PIP');
-            $table->string('nomor_KIP');
+            $table->string('no_KIP');
             $table->string('nm_KIP');
             $table->text('raw_json');
             $table->string('created_by', 100)->nullable();
