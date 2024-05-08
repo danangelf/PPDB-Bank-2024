@@ -99,6 +99,11 @@ Route::middleware(['auth','roleplay','isActiveUser'])->group(function () {
         Route::get('/siswa/synch/{kode_kecamatan}', [App\Http\Controllers\Data\SiswaController::class, 'synchronize']);
         Route::get('/siswa/datatable', [App\Http\Controllers\Data\SiswaController::class, 'datatable']);
         Route::resource('/siswa', App\Http\Controllers\Data\SiswaController::class)->except(['create', 'edit']);
+        
+        Route::get('/logsynchronize/datatable', [App\Http\Controllers\Data\LogSynchronizeController::class, 'datatable']);
+        Route::get('/logsynchronize', [App\Http\Controllers\Data\LogSynchronizeController::class, 'index']);
+        Route::get('/logsynchronize/{logsynchronize}', [App\Http\Controllers\Data\LogSynchronizeController::class, 'show']);
+        Route::get('/logsynchronize/details/{logsynchronize}', [App\Http\Controllers\Data\LogSynchronizeController::class, 'details']);
 
 
     });
