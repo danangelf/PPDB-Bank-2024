@@ -19,7 +19,7 @@
         
         <!-- Title -->
         <div class="border-b-2 border-black mb-4">
-            <h2 class="text-3xl font-medium" :id="$id('modal-title')">Form Data Kecamatan</h2>
+            <h2 class="text-3xl font-medium" :id="$id('modal-title')">Log Data</h2>
         </div>
         <!-- Content -->
         <form action="#" @submit.prevent="confirmSave">

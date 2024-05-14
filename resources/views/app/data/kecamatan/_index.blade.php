@@ -122,6 +122,7 @@
                 <th scope="col" class="px-4 py-3">Kabupaten</th>
                 <th scope="col" class="px-4 py-3">Kode Kecamatan</th>
                 <th scope="col" class="px-4 py-3">Kecamatan</th>
+                <th scope="col" class="px-4 py-3">Sekolah</th>
                 <th scope="col" class="px-4 py-3">Author</th>
                 <th scope="col" class="px-4 py-3">Last Updated</th>
                 <th scope="col" class="px-4 py-3">
@@ -137,6 +138,7 @@
                     <td class="px-4 py-3" x-text="row.kabupaten"></td>
                     <td class="px-4 py-3" x-text="row.kode_kecamatan"></td>
                     <td class="px-4 py-3" x-text="row.kecamatan"></td>
+                    <td class="px-4 py-3 text-right" x-text="row.jml"></td>
                     <td class="px-4 py-3" x-text="row.updated_by"></td>
                     <td class="px-4 py-3" x-text="row.updated_at"></td>
                     <td class="px-4 py-3 flex items-center justify-end">

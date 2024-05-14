@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Data\LogSynchronize;
 use App\Http\Controllers\Controller;
+use App\Models\Data\Kecamatan;
 
 class SekolahController extends Controller
 {
@@ -248,6 +249,17 @@ class SekolahController extends Controller
                 }
             }
             $extra_info["message"] = "Synchronize Sekolah Success. " . $created . " created, " . $updated . " updated.";
+
+            // update jumlah sekolah pada tabel kecamatan
+            $jumlahSekolah = Sekolah::where('kode_kecamatan', $kode_kecamatan)->count();
+            $extra_info['jumlah_sekolah'] = $jumlahSekolah;
+
+            $kecamatan = Kecamatan::where('kode_kecamatan', $kode_kecamatan)->first();
+            if ($kecamatan) {
+                $kecamatan->jml = $jumlahSekolah;
+                $kecamatan->save();
+            }
+
             $log = [
                 "id" => Str::uuid(),
                 "table" => "sekolah",

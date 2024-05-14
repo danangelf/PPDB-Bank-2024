@@ -161,6 +161,7 @@ class KecamatanController extends Controller
                 "kecamatan" => $item->kecamatan,
                 "kode_kabupaten" => $item->kode_kabupaten,
                 "kabupaten" => $item->kabupaten,
+                "jml" => $item->jml,
                 "updated_by" => $item->updated_by ? $item->updated_by : $item->created_by,
                 "updated_at" => $updated_at,
             ];
@@ -228,7 +229,7 @@ class KecamatanController extends Controller
                     $updated++;
                 }
             }
-
+            $extra_info["message"] = "Synchronize Kecamatan Success. " . $created . " created, " . $updated . " updated.";
             $log = [
                 "id" => Str::uuid(),
                 "table" => "kecamatan",
