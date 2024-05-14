@@ -57,6 +57,13 @@ class DapodikController extends Controller
         unset($siswa->id);
         unset($siswa->raw_json);
 
+        $sekolah = Sekolah::where('sekolah_id', $siswa->sekolah_id)->first();
+        unset($sekolah->id);
+        unset($sekolah->jml);
+        unset($sekolah->raw_json);
+
+        $siswa['sekolah'] = $sekolah;
+
         return response()->json([
             'status' => 200,
             'message' => 'Data siswa hasil singkronisasi dapodik',
