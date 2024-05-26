@@ -43,6 +43,9 @@ COPY deploy/cronjob/crontab.txt /etc/crontabs/root
 # pastikan cron di eksekusi
 RUN chmod 0644 /etc/crontabs/root
 
+# create log file ygy
+RUN touch /var/log/cron-test.log && chmod 0644 /var/log/cron-test.log
+
 
 # Install extensions
 RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring zip exif pcntl
