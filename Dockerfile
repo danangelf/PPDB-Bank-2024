@@ -22,7 +22,7 @@ WORKDIR /var/www/
 
 LABEL maintainer="Agung Laksmana <agung@sumbarprov.go.id> X Reyan Dirul Adha <reyan@sumbarprov.go.id>"
 
-RUN apt-get update && apt-get install -y \
+RUN apk --no-cache add \
     nginx \
     build-essential \
     libpng-dev \
@@ -39,8 +39,8 @@ RUN apt-get update && apt-get install -y \
     unzip \
     cron \
     curl \
-    libpq-dev \
-    git
+    libpq-dev
+
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
