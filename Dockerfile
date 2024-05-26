@@ -17,19 +17,12 @@ COPY deploy/php/php.ini /usr/local/etc/php/php.ini
 COPY deploy/php/php-fpm.conf  /usr/local/etc/php-fpm.conf
 COPY deploy/php/php-fpm.d/www.conf  /usr/local/etc/php-fpm.d/www.conf
 
-WORKDIR /
-ADD deploy/cronjob/crontab.txt /crontab.txt
-ADD deploy/cronjob/script.sh /script.sh
-COPY deploy/cronjob/entry.sh /entry.sh
-RUN chmod 755 /script.sh /entry.sh
-RUN /usr/bin/crontab /crontab.txt
-
-
 WORKDIR /var/www/
 
 LABEL maintainer="Agung Laksmana <agung@sumbarprov.go.id> X Reyan Dirul Adha <reyan@sumbarprov.go.id>"
 
 RUN apk --no-cache add \
+    busybox-suid \
     nginx \
     build-base \
     libpng-dev \
@@ -43,6 +36,13 @@ RUN apk --no-cache add \
     freetype-dev \
     libpq-dev \
     nano
+
+# Copy crontab file ke container
+COPY deploy/cronjob/crontab.txt /etc/crontabs/root
+
+# pastikan cron di eksekusi
+RUN chmod 0644 /etc/crontabs/root
+
 
 # Install extensions
 RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring zip exif pcntl
@@ -84,8 +84,8 @@ RUN chmod -R 777 /var/www/storage/
 # Expose port 9000
 EXPOSE 80
 
-# Script untuk memulai PHP-FPM dan Nginx
-CMD ["sh", "-c","/entry.sh","php-fpm -D && nginx -g 'daemon off;'"]
+# Script untuk memulai PHP-FPM dan Nginx serta cron
+CMD ["sh", "-c","crond -f && php-fpm -D && nginx -g 'daemon off;'"]
 
 # # Ganti user ke www-data
 # USER www-data
