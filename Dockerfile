@@ -17,6 +17,13 @@ COPY deploy/php/php.ini /usr/local/etc/php/php.ini
 COPY deploy/php/php-fpm.conf  /usr/local/etc/php-fpm.conf
 COPY deploy/php/php-fpm.d/www.conf  /usr/local/etc/php-fpm.d/www.conf
 
+WORKDIR /
+ADD deploy/cronjob/crontab.txt /crontab.txt
+ADD deploy/cronjob/script.sh /script.sh
+COPY deploy/cronjob/entry.sh /entry.sh
+RUN chmod 755 /script.sh /entry.sh
+RUN /usr/bin/crontab /crontab.txt
+
 
 WORKDIR /var/www/
 
@@ -78,7 +85,7 @@ RUN chmod -R 777 /var/www/storage/
 EXPOSE 80
 
 # Script untuk memulai PHP-FPM dan Nginx
-CMD ["sh", "-c", "php-fpm -D && nginx -g 'daemon off;'"]
+CMD ["sh", "-c","/entry.sh","php-fpm -D && nginx -g 'daemon off;'"]
 
 # # Ganti user ke www-data
 # USER www-data
