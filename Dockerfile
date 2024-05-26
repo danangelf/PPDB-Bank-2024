@@ -22,6 +22,7 @@ WORKDIR /var/www/
 LABEL maintainer="Agung Laksmana <agung@sumbarprov.go.id> X Reyan Dirul Adha <reyan@sumbarprov.go.id>"
 
 RUN apk --no-cache add \
+    tzdata \
     busybox-suid \
     nginx \
     build-base \
@@ -36,6 +37,15 @@ RUN apk --no-cache add \
     freetype-dev \
     libpq-dev \
     nano
+
+# Atur zona waktu ke Jakarta ygy
+ENV TZ=Asia/Jakarta
+
+# Copy timezone data dan set localtime ygy
+RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && echo "$TZ" > /etc/timezone
+
+# Jalankan perintah date untuk memastikan waktu sudah diatur ygy
+RUN date
 
 # Copy crontab file ke container
 COPY deploy/cronjob/crontab.txt /etc/crontabs/root
@@ -88,7 +98,7 @@ RUN chmod -R 777 /var/www/storage/
 EXPOSE 80
 
 # Script untuk memulai PHP-FPM dan Nginx serta cron
-CMD ["sh", "-c","crond -f && php-fpm -D && nginx -g 'daemon off;'"]
+CMD ["sh", "-c","php-fpm -D & crond -f & nginx -g 'daemon off;'"]
 
 # # Ganti user ke www-data
 # USER www-data
