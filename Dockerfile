@@ -24,26 +24,18 @@ LABEL maintainer="Agung Laksmana <agung@sumbarprov.go.id> X Reyan Dirul Adha <re
 
 RUN apk --no-cache add \
     nginx \
-    build-essential \
+    build-base \
     libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    locales \
-    zip \
-    libonig-dev \
+    libjpeg-turbo-dev \
     libzip-dev \
-    jpegoptim optipng pngquant gifsicle \
-    ca-certificates \
-    nano \
-    tmux \
     unzip \
-    cron \
+    git \
     curl \
-    libpq-dev
-
-
-# Clear cache
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+    oniguruma-dev \
+    libxml2-dev \
+    freetype-dev \
+    libpq-dev \
+    nano
 
 # Install extensions
 RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring zip exif pcntl
