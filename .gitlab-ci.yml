@@ -1,0 +1,57 @@
+stages:
+  - image-building
+  - deploy-dev
+  - deploy-prod
+
+variables:
+  CI_REGISTRY_USER: agunglaksmana908
+  CI_REGISTRY_PASSWORD: glpat-Nfk2CPs6yyx45sZq7yfV
+  CI_REGISTRY: 10.90.59.40:5050
+  DOCKER_IMAGE: $CI_REGISTRY_IMAGE:latest
+
+build-image:
+  stage: image-building
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - echo "Current Branch $CI_COMMIT_REF_NAME"
+    - BASE_BRANCH=$(echo "$CI_COMMIT_REF_NAME" | cut -d'/' -f1)
+    - echo "Base branch $BASE_BRANCH"
+    - >
+      if [ "$BASE_BRANCH" == "release" ]; then
+       cp deploy/.env.ppdb.production .env
+      else
+       cp deploy/.env.ppdb.development .env
+      fi
+  script:
+    - docker build -t $DOCKER_IMAGE . --progress=plain --no-cache
+    - docker push $DOCKER_IMAGE
+  tags:
+    - runner-kubernetes
+  only:
+    - /^development.*$/
+    - /^release.*$/
+
+deploy-development:
+  stage: deploy-dev
+  script:
+    - whoami
+    - pwd
+    - echo "Deploying application development..."
+    - echo "Success Deploying application development..."
+  tags:
+    - runner-kubernetes
+  only:
+    - /^development.*$/
+
+deploy-production:
+  stage: deploy-prod
+  script:
+    - whoami
+    - pwd
+    - echo "Deploying application production..."
+    - echo "Success Deploying application production..."
+  tags:
+    - runner-kubernetes
+  when: manual
+  only:
+    - /^release.*$/

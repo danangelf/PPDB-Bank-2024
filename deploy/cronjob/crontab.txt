@@ -1,0 +1,3 @@
+* * * * * cd /var/www/ && php artisan schedule:run >> /dev/null 2>&1
+
+* * * * * echo "laravel schedule executed at $(date)" >> /var/log/cron-test.log
