@@ -130,7 +130,7 @@
             </label>
             <select name="kecamatan" x-model="selected.kecamatan"
             class="w-full h-9 text-base text-gray-700 placeholder-gray-300 border rounded-lg focus:shadow-outline" 
-            type="text" id="kecamatanDom"  @change="getSekolah"
+            type="text" id="kecamatanDom" @change="onChangeKecamatan"
             placeholder="Kecamatan">
                 <option value="" disabled>Loading...</option>
             </select>
@@ -141,7 +141,7 @@
             </label>
             <select name="sekolah" x-model="selected.sekolah"
             class="w-full h-9 text-base text-gray-700 placeholder-gray-300 border rounded-lg focus:shadow-outline" 
-            type="text" id="sekolahDom" x-effect="getSekolah"
+            type="text" id="sekolahDom" x-init="getSekolah"
             placeholder="Sekolah">
                 <option value="" disabled>Loading...</option>
             </select>
@@ -157,7 +157,7 @@
                 <th scope="col" class="px-4 py-3">NISN</th>
                 <th scope="col" class="px-4 py-3">Nama</th>
                 <th scope="col" class="px-4 py-3">No. KK</th>
-                <th scope="col" class="px-4 py-3">Jenis Kelamin</th>
+                <th scope="col" class="px-4 py-3">JK</th>
                 <th scope="col" class="px-4 py-3">Tanggal Lahir</th>
                 <th scope="col" class="px-4 py-3">Author</th>
                 <th scope="col" class="px-4 py-3">Last Updated</th>
@@ -174,7 +174,18 @@
                     <td class="px-4 py-3" x-text="row.nisn"></td>
                     <td class="px-4 py-3" x-text="row.nama"></td>
                     <td class="px-4 py-3" x-text="row.no_kk"></td>
-                    <td class="px-4 py-3" x-text="row.jenis_kelamin"></td>
+                    <td class="px-4 py-3 text-center">
+                        <template x-if="row.jenis_kelamin == 'L'">
+                            <span class="p-2 bg-blue-500 rounded-full text-white text-xs">
+                                <i class="fa fa-mars"></i>
+                            </span>
+                        </template>
+                        <template x-if="row.jenis_kelamin == 'P'">
+                            <span class="p-2 bg-red-500 rounded-full text-white text-xs">
+                                <i class="fa fa-venus"></i>
+                            </span>
+                        </template>
+                    </td>
                     <td class="px-4 py-3" x-text="row.tanggal_lahir"></td>
                     <td class="px-4 py-3" x-text="row.updated_by"></td>
                     <td class="px-4 py-3" x-text="row.updated_at"></td>

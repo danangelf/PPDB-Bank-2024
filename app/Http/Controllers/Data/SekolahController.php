@@ -143,7 +143,51 @@ class SekolahController extends Controller
             ]
         ]);
     }
-    public function synchronize($kode_kecamatan)
+    public function synchronize($wilayah,$kode)
+    {
+        if($wilayah == "kecamatan"){
+            $response = $this->getAndStoreSekolah($kode);
+            return response()->json($response);
+        }
+        else if($wilayah == "kabkota"){
+            $response = $this->getAndStoreSekolahKabkota($kode);
+            return response()->json($response);
+        }
+        else{
+            return response()->json([
+                'success' => false,
+                'message' => 'Wilayah not found'
+            ]);
+        }
+    }
+
+    public function getAndStoreSekolahKabkota($kode_kabkota)
+    {
+        // load data kecamatan menggunakan kode kabkota
+        $kecamatan = 0;
+        $updated = 0;
+        $created = 0;
+
+        $dataKec = Kecamatan::where('kode_kabupaten', $kode_kabkota)->get();
+        foreach($dataKec as $kec){
+            $response = $this->getAndStoreSekolah($kec->kode_kecamatan);
+            $kecamatan++;
+            if($response['success']){
+                $updated += $response['data']['updated'];
+                $created += $response['data']['created'];
+            }
+        }
+        return [
+            'success' => true,
+            'message' => 'Synchronize Sekolah Success. ' . $kecamatan . ' kecamatan, ' . $created . ' created, ' . $updated . ' updated.',
+            'data' => [
+                'created' => $created,
+                'updated' => $updated
+            ]
+        ];
+    }
+
+    public function getAndStoreSekolah($kode_kecamatan)
     {
         $extra_info["token"] = env("TOKEN_API_DISDIK");
         $params["kode_kecamatan"] = $kode_kecamatan;
@@ -163,10 +207,10 @@ class SekolahController extends Controller
                 
                 LogSynchronize::create($log);
                 
-                return response()->json([
+                return [
                     'success' => false,
                     'message' => $response['message']
-                ]);
+                ];
             }
 
             $updated = 0;
@@ -273,14 +317,14 @@ class SekolahController extends Controller
             
             LogSynchronize::create($log);
 
-            return response()->json([
+            return [
                 'success' => true,
                 'message' => $extra_info["message"],
                 'data' => [
                     "created" => $created,
                     "updated" => $updated
                 ]
-            ]);
+            ];
         }
         catch(\Exception $e){
             $log = [
@@ -295,10 +339,10 @@ class SekolahController extends Controller
             
             LogSynchronize::create($log);
 
-            return response()->json([
+            return [
                 'success' => false,
                 'message' => $e->getMessage()
-            ]);
+            ];
         }
     }
 

@@ -141,7 +141,21 @@ class SiswaController extends Controller
             ]
         ]);
     }
-    public function synchronize($npsn)
+    public function synchronize($scope,$kode)
+    {
+        if($scope === "sekolah"){
+            $response = $this->getAndStoreSiswa($kode);
+        }
+        else{
+            $response = [
+                "success" => false,
+                "message" => "Scope not found"
+            ];
+        }
+        return response()->json($response);
+    }
+
+    public function getAndStoreSiswa($npsn)
     {
         $extra_info["token"] = env("TOKEN_API_DISDIK");
         $params["npsn"] = $npsn;
@@ -161,10 +175,10 @@ class SiswaController extends Controller
                 
                 LogSynchronize::create($log);
                 
-                return response()->json([
+                return [
                     'success' => false,
                     'message' => $response['message']
-                ]);
+                ];
             }
 
             $updated = 0;
@@ -336,14 +350,14 @@ class SiswaController extends Controller
 
             LogSynchronize::create($log);
 
-            return response()->json([
+            return [
                 'success' => true,
                 'message' => $extra_info["message"],
                 'data' => [
                     "created" => $created,
                     "updated" => $updated
                 ]
-            ]);
+            ];
         }
         catch(\Exception $e){
             $log = [
@@ -358,10 +372,10 @@ class SiswaController extends Controller
             
             LogSynchronize::create($log);
 
-            return response()->json([
+            return [
                 'success' => false,
                 'message' => $e->getMessage()
-            ]);
+            ];
         }
     }
 }
