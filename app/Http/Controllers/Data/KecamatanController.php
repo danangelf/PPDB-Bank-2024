@@ -182,6 +182,12 @@ class KecamatanController extends Controller
 
     public function synchronize()
     {
+        $response = $this->getAndStoreKecamatan();
+        return response()->json($response);
+    }
+
+    public function getAndStoreKecamatan()
+    {
         $extra_info["token"] = env("TOKEN_API_DISDIK");
         try{
             $response = ApiDisdik::synchKecamatan();
@@ -197,10 +203,10 @@ class KecamatanController extends Controller
                 
                 LogSynchronize::create($log);
                 
-                return response()->json([
+                return [
                     'success' => false,
                     'message' => $response['message']
-                ]);
+                ];
             }
 
             $updated = 0;
@@ -243,14 +249,14 @@ class KecamatanController extends Controller
             
             LogSynchronize::create($log);
 
-            return response()->json([
+            return [
                 'success' => true,
                 'message' => $extra_info["message"],
                 'data' => [
                     "created" => $created,
                     "updated" => $updated
                 ]
-            ]);
+            ];
         }
         catch(\Exception $e){
             $log = [
@@ -264,10 +270,10 @@ class KecamatanController extends Controller
             
             LogSynchronize::create($log);
 
-            return response()->json([
+            return [
                 'success' => false,
                 'message' => $e->getMessage()
-            ]);
+            ];
         }
     }
 
@@ -275,6 +281,7 @@ class KecamatanController extends Controller
     {
         $kabkota = Kecamatan::query()
                     ->select('kode_kabupaten', 'kabupaten')
+                    ->orderBy('kode_kabupaten', 'desc')
                     ->groupBy('kode_kabupaten','kabupaten')->get();
         $kecamatan = Kecamatan::all();
 
