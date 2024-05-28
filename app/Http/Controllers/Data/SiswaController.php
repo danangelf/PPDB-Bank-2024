@@ -106,14 +106,8 @@ class SiswaController extends Controller
 
         // remap
         $objData = $objData->map(function($item){
-            $jam = Carbon::parse($item->created_at)->diffInHours();
-            if($jam > 24) {
-                $updated_at = $item->updated_at ? Carbon::parse($item->updated_at)->format('d M Y H:i') : Carbon::parse($item->created_at)->format('d M Y H:i');
-            }
-            else
-            {
-                $updated_at = $item->updated_at ? Carbon::createFromFormat('Y-m-d H:i:s', $item->updated_at)->diffForHumans() : Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at)->diffForHumans();
-            }
+            $jam = Carbon::parse($item->updated_at)->diffInHours();
+            $updated_at = $jam > 24 ? Carbon::parse($item->updated_at)->format('d M Y H:i') : Carbon::parse($item->updated_at)->diffForHumans();
             return [
                 "id" => $item->id,
                 "peserta_didik_id" => $item->peserta_didik_id,
@@ -141,7 +135,77 @@ class SiswaController extends Controller
             ]
         ]);
     }
-    public function synchronize($npsn)
+    public function synchronize($scope,$kode)
+    {
+        if($scope === "sekolah"){
+            $response = $this->getAndStoreSiswa($kode);
+        }
+        else if($scope === "kecamatan"){
+            $response = $this->getAndStoreSiswaKecamatan($kode);
+        }
+        else if($scope === "kabkota"){
+            $response = $this->getAndStoreSiswaKabkota($kode);
+        }
+        else{
+            $response = [
+                "success" => false,
+                "message" => "Scope not found"
+            ];
+        }
+        return response()->json($response);
+    }
+
+    public function getAndStoreSiswaKabkota($kode_kabupaten)
+    {
+        $jmlSekolah = 0;
+        $created = 0;
+        $updated = 0;
+        //load sekolah dengan kode kabupaten
+        $dataSekolah = Sekolah::where('kode_kabupaten', $kode_kabupaten)->get();
+        foreach($dataSekolah as $sekolah){
+            $response = $this->getAndStoreSiswa($sekolah->npsn);
+            if($response['success']){
+                $jmlSekolah++;
+                $created += $response['data']['created'];
+                $updated += $response['data']['updated'];
+            }
+        }
+        return [
+            'success' => true,
+            'message' => 'Synchronize Siswa Success. ' . $jmlSekolah . ' sekolah created, ' . $created . ' created, ' . $updated . ' updated.',
+            'data' => [
+                'created' => $created,
+                'updated' => $updated
+            ]
+        ];
+    }
+
+    public function getAndStoreSiswaKecamatan($kode_kecamatan)
+    {
+        $jmlSekolah = 0;
+        $created = 0;
+        $updated = 0;
+        //load sekolah dengan kode kecamatan
+        $dataSekolah = Sekolah::where('kode_kecamatan', $kode_kecamatan)->get();
+        foreach($dataSekolah as $sekolah){
+            $response = $this->getAndStoreSiswa($sekolah->npsn);
+            if($response['success']){
+                $jmlSekolah++;
+                $created += $response['data']['created'];
+                $updated += $response['data']['updated'];
+            }
+        }
+        return [
+            'success' => true,
+            'message' => 'Synchronize Siswa Success. ' . $jmlSekolah . ' sekolah created, ' . $created . ' created, ' . $updated . ' updated.',
+            'data' => [
+                'created' => $created,
+                'updated' => $updated
+            ]
+        ];
+    }
+
+    public function getAndStoreSiswa($npsn)
     {
         $extra_info["token"] = env("TOKEN_API_DISDIK");
         $params["npsn"] = $npsn;
@@ -156,15 +220,15 @@ class SiswaController extends Controller
                     "status_result" => "failed",
                     "msg_result" => $response['message'],
                     "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
-                    "created_by" => auth()->user()->username,
+                    "created_by" => auth()->user()->username ?? "system",
                 ];
                 
                 LogSynchronize::create($log);
                 
-                return response()->json([
+                return [
                     'success' => false,
                     'message' => $response['message']
-                ]);
+                ];
             }
 
             $updated = 0;
@@ -180,7 +244,7 @@ class SiswaController extends Controller
                     if(!$data){
                         $data = new Siswa();
                         $data->id = Str::uuid();
-                        $data->created_by = auth()->user()->username;
+                        $data->created_by = auth()->user()->username ?? "system";
                         $data->peserta_didik_id = trim($item["peserta_didik_id"]);
                         $data->sekolah_id = trim($item["sekolah_id"]);
                         $data->nama = trim($item["nama"]);
@@ -245,7 +309,7 @@ class SiswaController extends Controller
                         $created++;
                     }
                     else{
-                        $data->updated_by = auth()->user()->username;
+                        $data->updated_by = auth()->user()->username ?? "system";
                         $data->sekolah_id = trim($item["sekolah_id"]);
                         $data->nama = trim($item["nama"]);
                         $data->jenis_kelamin = trim($item["jenis_kelamin"]);
@@ -305,7 +369,7 @@ class SiswaController extends Controller
                         $data->no_KIP = trim($item["no_KIP"]);
                         $data->nm_KIP = trim($item["nm_KIP"]);
                         $data->raw_json = json_encode($item, JSON_PRETTY_PRINT);
-                        $data->save();
+                        $data->update();
                         $updated++;
                     }
                 }
@@ -331,19 +395,19 @@ class SiswaController extends Controller
                 "result" => json_encode($response['response'], JSON_PRETTY_PRINT),
                 "msg_result" => "",
                 "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
-                "created_by" => auth()->user()->username,
+                "created_by" => auth()->user()->username ?? "system",
             ];
 
             LogSynchronize::create($log);
 
-            return response()->json([
+            return [
                 'success' => true,
                 'message' => $extra_info["message"],
                 'data' => [
                     "created" => $created,
                     "updated" => $updated
                 ]
-            ]);
+            ];
         }
         catch(\Exception $e){
             $log = [
@@ -353,15 +417,15 @@ class SiswaController extends Controller
                 "status_result" => "failed",
                 "msg_result" => $e->getMessage(),
                 "extra_info" => json_encode($extra_info, JSON_PRETTY_PRINT),
-                "created_by" => auth()->user()->username,
+                "created_by" => auth()->user()->username ?? "system",
             ];
             
             LogSynchronize::create($log);
 
-            return response()->json([
+            return [
                 'success' => false,
                 'message' => $e->getMessage()
-            ]);
+            ];
         }
     }
 }

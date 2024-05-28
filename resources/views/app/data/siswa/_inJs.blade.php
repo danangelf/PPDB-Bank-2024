@@ -186,18 +186,23 @@
             },
             async synchData() {
                 this.loadingState = true
+                let scope = "-"
+                let id = "-"
                 try {
-                    if(this.selected.sekolah === ""){
+                    if(this.selected.sekolah === "" && this.selected.kecamatan === "" && this.selected.kabkota === ""){
                         Swal.fire({
                             icon: 'warning',
-                            title: "Silakan pilih sekolah terlebih dahulu",
+                            title: "Silakan pilih sekolah, kecamatan atau kabupaten terlebih dahulu",
                             showConfirmButton: false,
                             timer: 1500
                         })
                         this.loadingState = false
                         return false
                     }
-                    const response = await axios.get('{{ env('APP_URL') }}/data/siswa/synch/' + this.selected.sekolah);
+                    if(this.selected.kabkota !== "") {scope = 'kabkota'; id = this.selected.kabkota}
+                    if(this.selected.kecamatan !== "") {scope = 'kecamatan'; id = this.selected.kecamatan}
+                    if(this.selected.sekolah !== "") {scope = 'sekolah'; id = this.selected.sekolah}
+                    const response = await axios.get('{{ env('APP_URL') }}/data/siswa/synch/' + scope + '/' + id);
                     if(response.status == 200) {
                         Swal.fire({
                             icon: 'success',
@@ -299,24 +304,42 @@
                 this.kecamatanSelect.clearOptions()
                 this.kecamatanSelect.addOptions(this.filteredKecamatan(), user_created=false)
             },
+            onChangeKecamatan()
+            {
+                this.getSekolah()
+            },
             async getSekolah()
             {
+                console.log(this.selected.kecamatan);
                 try {
                     if(this.selected.kecamatan !== ""){
                         const response = await axios.get('{{ env('APP_URL') }}/data/sekolah/showall/' + this.selected.kecamatan)
                         if(response.status == 200) {
                             this.sekolahData = response.data.data
-                            this.sekolahData.unshift({kode_sekolah: '', sekolah: 'Semua Sekolah'})
+                            if(this.sekolahSelect == null) this.initSekolahSelect()
+                            else{
+                                this.sekolahSelect.clear()
+                                this.sekolahSelect.clearOptions()
+                                this.sekolahData.unshift({npsn: '', nama: 'Semua Sekolah', kecamatan: '', kabupaten: ''})
+                                this.sekolahSelect.addOptions(this.sekolahData, user_created=false)
+                            }
+                        }
+                    }
+                    else{
+                        if(this.sekolahSelect == null){
+                            setTimeout(() => {
+                                this.initSekolahSelect()
+                            }, 1000);
+                        }
+                        else{
                             this.sekolahSelect.clear()
                             this.sekolahSelect.clearOptions()
+                            this.sekolahData = []
+                            this.sekolahData.unshift({npsn: '', nama: 'Semua Sekolah', kecamatan: '', kabupaten: ''})
                             this.sekolahSelect.addOptions(this.sekolahData, user_created=false)
                         }
                     }
-                    if(this.sekolahData.length == 0){
-                        setTimeout(() => {
-                            this.initSekolahSelect()
-                        }, 1000);
-                    }
+                    
                 } catch (e) {
                     Swal.fire({
                         icon: 'error',
@@ -332,7 +355,7 @@
                     valueField: 'npsn',
                     labelField: 'nama',
                     searchField: 'nama',
-                    options: this.sekolahData,
+                    options: this.filteredSekolah(),
                     render: {
                         option: function(data, escape) {
                             return '<div class="flex flex-col mb-2">' +
@@ -345,6 +368,12 @@
                         }
                     }
                 }) 
+            },
+            filteredSekolah()
+            {
+                const filtered = this.selected.kecamatan == '' ? this.sekolahData : this.sekolahData.filter(item => item.kode_kecamatan == this.selected.kecamatan)
+                filtered.unshift({npsn: '', nama: 'Semua Sekolah', kecamatan: '', kabupaten: ''})
+                return filtered
             },
             datatable: datatable()
         }
